@@ -46,17 +46,14 @@ public class TetrisFactory {
             }
 
             currentTetromino = tetromino;
+
             currentTetrominoStartRow = row;
             currentTetrominoStartColumn = column;
 
             boolean[][] tetrominoMap = currentTetromino.getTetrominoMap();
 
-            for (int i = 0; i < tetrominoMap.length; i++) {
-                boolean[] tetrominoMapRow = tetrominoMap[i];
-
-                for (int j = 0; j < tetrominoMapRow.length; j++) {
-                    boolean tetrominoMapCell = tetrominoMap[i][j];
-
+            for (boolean[] tetrominoMapRow : tetrominoMap) {
+                for (boolean tetrominoMapCell : tetrominoMapRow) {
                     if (tetrominoMapCell) {
                         Cell cell = map.getCell(row, column);
 
@@ -84,36 +81,108 @@ public class TetrisFactory {
         @Override
         protected boolean tick() {
             int scale = currentTetromino.getScale();
-            boolean[] tetrominoMapRow = currentTetromino.getTetrominoMap()[scale - 1];
-            int row = currentTetrominoStartRow - 1;
-            int column = currentTetrominoStartColumn;
 
-            for (boolean tetrominoMapCell : tetrominoMapRow) {
-                if (tetrominoMapCell) {
-                    Cell cell = map.getCell(row, column);
+            boolean[][] tetrominoMap = currentTetromino.getTetrominoMap();
 
-                    if (cell == null || cell.isOccupied()) {
-                        Tetromino newTetromino = getNextTetromino();
+            int row = currentTetrominoStartRow + scale - 1;
 
-                        Cell placementCell = getPlacementCell(newTetromino);
+            for (int i = scale - 1; i >= 0; i --) {
+                boolean[] tetrominoMapRow = tetrominoMap[i];
 
-                        return placeTetromino(newTetromino, placementCell.getRow(), placementCell.getColumn());
-                    };
+                int column = currentTetrominoStartColumn;
+                row--;
+
+                for (boolean tetrominoMapCell : tetrominoMapRow) {
+                    if (tetrominoMapCell) {
+                        Cell cell = map.getCell(row, column);
+
+                        if (cell == null) {
+                            Tetromino newTetromino = getNextTetromino();
+
+                            Cell placementCell = getPlacementCell(newTetromino);
+
+                            return placeTetromino(newTetromino, placementCell.getRow(), placementCell.getColumn());
+                        }
+
+                        if (cell.isOccupied()) {
+                            if (!currentTetrominoOccupiedCells.contains(cell)) {
+                                Tetromino newTetromino = getNextTetromino();
+
+                                Cell placementCell = getPlacementCell(newTetromino);
+
+                                return placeTetromino(newTetromino, placementCell.getRow(), placementCell.getColumn());
+                            }
+                        }
+                    }
+
+                    column++;
                 }
-
-                column++;
             }
 
-            boolean isPlaced = placeTetromino(currentTetromino, currentTetrominoStartRow - 1, currentTetrominoStartColumn);
 
-            if (!isPlaced) return false;
-
-            return true;
+            return placeTetromino(currentTetromino, currentTetrominoStartRow - 1, currentTetrominoStartColumn);
         }
 
+        // clockwise rotate
         @Override
         protected void rotate() {
+            boolean[][] currentTetrominoMap = currentTetromino.getTetrominoMap();
 
+            int scale = currentTetromino.getScale();
+
+            // creating copy of tetromino map
+            boolean[][] rotatedTetrominoMap = new boolean[scale][scale];
+
+            // rotating the copy
+            for (int i = 0; i < scale; i++) {
+                boolean[] tetrominoMapRow = currentTetrominoMap[i];
+
+                for (int j = 0; j < scale; j++) {
+                    boolean tetrominoMapCell = tetrominoMapRow[j];
+                    rotatedTetrominoMap[scale - 1 - j][i] = tetrominoMapCell;
+                }
+            }
+
+            boolean isRotatable = true;
+
+            // checking if any collisions, if there is set isRotatable to false
+            int row = currentTetrominoStartRow;
+            int column = currentTetrominoStartColumn;
+
+            for (boolean[] tetrominoMapRow : rotatedTetrominoMap) {
+                if (!isRotatable) break;
+
+                for (boolean tetrominoMapCell : tetrominoMapRow) {
+                    if (tetrominoMapCell) {
+                        Cell cell = map.getCell(row, column);
+
+                        if (cell == null) {
+                            isRotatable = false;
+                            break;
+                        }
+
+                        if (cell.isOccupied()) {
+                            if (!currentTetrominoOccupiedCells.contains(cell)) {
+                                isRotatable = false;
+                                break;
+                            }
+                        }
+                    }
+
+                    column++;
+                }
+
+                column -= scale;
+
+                row++;
+            }
+
+            // if rotatable, actually rotating the tetromino map and placing tetromino
+            if (isRotatable) {
+                System.arraycopy(rotatedTetrominoMap, 0, currentTetrominoMap, 0, scale);
+
+                placeTetromino(currentTetromino, currentTetrominoStartRow, currentTetrominoStartColumn);
+            }
         }
 
         @Override
@@ -124,26 +193,23 @@ public class TetrisFactory {
 
             boolean isMoveableToRight = true;
 
-            for (int i = 0; i < tetrominoMap.length; i++) {
-                boolean[] tetrominoMapRow = tetrominoMap[i];
+            for (boolean[] tetrominoMapRow : tetrominoMap) {
                 int column = currentTetrominoStartColumn + 1;
 
-                for (int j = 0; j < tetrominoMapRow.length; j++) {
-                    boolean tetrominoMapCell = tetrominoMapRow[j];
-
+                for (boolean tetrominoMapCell : tetrominoMapRow) {
                     if (tetrominoMapCell) {
                         Cell cell = map.getCell(row, column);
 
                         if (cell == null) {
                             isMoveableToRight = false;
                             break;
-                        };
+                        }
 
                         if (cell.isOccupied()) {
                             if (!currentTetrominoOccupiedCells.contains(cell)) {
                                 isMoveableToRight = false;
                                 break;
-                            };
+                            }
                         }
                     }
 
@@ -164,12 +230,10 @@ public class TetrisFactory {
 
             boolean isMoveableToLeft = true;
 
-            for (int i = 0; i < tetrominoMap.length; i++) {
-                boolean[] tetrominoMapRow = tetrominoMap[i];
-
+            for (boolean[] tetrominoMapRow : tetrominoMap) {
                 int column = currentTetrominoStartColumn + currentTetromino.getScale() - 2;
 
-                for (int j = tetrominoMapRow.length - 1; j >= 0 ; j--) {
+                for (int j = tetrominoMapRow.length - 1; j >= 0; j--) {
                     boolean tetrominoMapCell = tetrominoMapRow[j];
 
                     if (tetrominoMapCell) {
@@ -178,13 +242,13 @@ public class TetrisFactory {
                         if (cell == null) {
                             isMoveableToLeft = false;
                             break;
-                        };
+                        }
 
                         if (cell.isOccupied()) {
                             if (!currentTetrominoOccupiedCells.contains(cell)) {
                                 isMoveableToLeft = false;
                                 break;
-                            };
+                            }
                         }
                     }
 
