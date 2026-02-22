@@ -3,7 +3,7 @@ package com.mehmetaltinbas;
 import com.mehmetaltinbas.core.TetrisGameManager;
 import com.mehmetaltinbas.factory.TetrisFactory;
 import com.mehmetaltinbas.models.TetrisAction;
-import com.mehmetaltinbas.models.TetrominoType;
+import com.mehmetaltinbas.models.TetrominoShape;
 import com.mehmetaltinbas.ui.TetrisTextInput;
 
 import java.io.BufferedReader;
@@ -27,7 +27,7 @@ public class Main {
             String actionsInput = "T T L T T T T T T T T O O O";
             String piecesInput = "J Z";
             List<TetrisAction> actions = TetrisTextInput.parseActions(actionsInput);
-            List<TetrominoType> nextTetrominoes = TetrisTextInput.parseTetrominoes(piecesInput);
+            List<TetrominoShape> nextTetrominoes = TetrisTextInput.parseTetrominoes(piecesInput);
 
             TetrisGameManager manager = TetrisFactory.createTetrisGameManager(actions, nextTetrominoes);
 

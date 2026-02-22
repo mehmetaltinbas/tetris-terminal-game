@@ -1,53 +1,53 @@
 package com.mehmetaltinbas.factory;
 
 import com.mehmetaltinbas.models.Tetromino;
-import com.mehmetaltinbas.models.TetrominoType;
+import com.mehmetaltinbas.models.TetrominoShape;
 
 import java.util.*;
 
 public class TetrominoFactory {
-    private final HashMap<TetrominoType, Tetromino> tetrominoesMap;
-    private final List<TetrominoType> nextTetrominoes;
+    private final HashMap<TetrominoShape, Tetromino> tetrominoesMap;
+    private final List<TetrominoShape> nextTetrominoes;
     private int currentTetrominoesIndex = -1;
 
-    public TetrominoFactory(List<TetrominoType> nextTetrominoes) {
+    public TetrominoFactory(List<TetrominoShape> nextTetrominoes) {
         this.nextTetrominoes = nextTetrominoes;
         tetrominoesMap = createMap();
     }
 
-    private HashMap<TetrominoType, Tetromino> createMap() {
-        final HashMap<TetrominoType, Tetromino> tetrominoesMap;
+    private HashMap<TetrominoShape, Tetromino> createMap() {
+        final HashMap<TetrominoShape, Tetromino> tetrominoesMap;
         tetrominoesMap = new HashMap<>();
-        tetrominoesMap.put(TetrominoType.S, new Tetromino(new String[]{
+        tetrominoesMap.put(TetrominoShape.S, new Tetromino(new String[]{
             ".##",
             "##.",
             "...",
         }));
-        tetrominoesMap.put(TetrominoType.Z, new Tetromino(new String[]{
+        tetrominoesMap.put(TetrominoShape.Z, new Tetromino(new String[]{
             "##.",
             ".##",
             "...",
         }));
-        tetrominoesMap.put(TetrominoType.O, new Tetromino(new String[]{
+        tetrominoesMap.put(TetrominoShape.O, new Tetromino(new String[]{
             "##",
             "##"
         }));
-        tetrominoesMap.put(TetrominoType.T, new Tetromino(new String[]{
+        tetrominoesMap.put(TetrominoShape.T, new Tetromino(new String[]{
             ".#.",
             "###",
             "..."
         }));
-        tetrominoesMap.put(TetrominoType.L, new Tetromino(new String[]{
+        tetrominoesMap.put(TetrominoShape.L, new Tetromino(new String[]{
             ".#.",
             ".#.",
             ".##",
         }));
-        tetrominoesMap.put(TetrominoType.J, new Tetromino(new String[]{
+        tetrominoesMap.put(TetrominoShape.J, new Tetromino(new String[]{
             ".#.",
             ".#.",
             "##.",
         }));
-        tetrominoesMap.put(TetrominoType.I, new Tetromino(new String[]{
+        tetrominoesMap.put(TetrominoShape.I, new Tetromino(new String[]{
             ".#..",
             ".#..",
             ".#..",
@@ -56,8 +56,8 @@ public class TetrominoFactory {
         return tetrominoesMap;
     }
 
-    public Tetromino createTetromino(TetrominoType tetrominoType) {
-        return new Tetromino(tetrominoesMap.get(tetrominoType));
+    public Tetromino createTetromino(TetrominoShape tetrominoShape) {
+        return new Tetromino(tetrominoesMap.get(tetrominoShape));
     }
 
     public Tetromino getNext() {
