@@ -3,9 +3,9 @@ package com.mehmetaltinbas.core;
 import com.mehmetaltinbas.models.Cell;
 
 public class TetrisMap {
-    private Cell[][] cells;
-    private int height;
-    private int width;
+    private final Cell[][] cells;
+    private final int height;
+    private final int width;
 
     public TetrisMap(int height, int width) {
         this.height = height;

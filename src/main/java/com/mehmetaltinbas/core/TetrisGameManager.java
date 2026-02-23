@@ -1,6 +1,7 @@
 package com.mehmetaltinbas.core;
 
 import com.mehmetaltinbas.models.TetrisAction;
+import org.jline.terminal.Attributes;
 import org.jline.terminal.Terminal;
 import org.jline.terminal.TerminalBuilder;
 import org.jline.utils.NonBlockingReader;
@@ -50,7 +51,11 @@ public class TetrisGameManager {
 
     public void startInputThread() {
         Thread thread = new Thread(() -> {
-            try (Terminal terminal = TerminalBuilder.builder().system(true).build()) {
+            try (Terminal terminal = TerminalBuilder.builder()
+                    .system(true)
+                    .jansi(true)
+                    .build()
+            ) {
                 terminal.enterRawMode();
 
                 NonBlockingReader nonBlockingReader = terminal.reader();

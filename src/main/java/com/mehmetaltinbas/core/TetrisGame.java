@@ -72,9 +72,7 @@ public class TetrisGame {
             }
         } else {
             if (placeTetromino(tetromino, cell.getRow(), cell.getColumn())) {
-                Thread thread = new Thread(() -> {
-                    startTicking();
-                });
+                Thread thread = new Thread(this::startTicking);
                 thread.setDaemon(true);
                 thread.start();
 
