@@ -9,6 +9,8 @@ import com.mehmetaltinbas.ui.TetrisUI;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.mehmetaltinbas.core.TetrisGameManager.isDebugging;
+
 public class TetrisGame {
     protected TetrisMap map;
     protected TetrisUI ui;
@@ -22,11 +24,26 @@ public class TetrisGame {
     }
 
     public void drawScreen() {
+        if (!isDebugging) {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+        } else {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         ui.draw(map);
     }
 
     private void gameLost() {
         ui.gameLost();
+    }
+
+    protected Tetromino getRandomTetromino() {
+        return tetrominoFactory.getRandom();
     }
 
     protected Tetromino getNextTetromino() {
@@ -43,36 +60,45 @@ public class TetrisGame {
         return map.getCell(startRow, startCol);
     }
 
-    protected boolean checkTetromino(Tetromino tetromino, int row, int column) {
-        boolean[][] shape = tetromino.getTetrominoMap();
-        for (int i = 0; i < shape.length; i++) {
-            for (int j = 0; j < shape[i].length; j++) {
-                if (shape[i][j]) {
-                    int targetRow = row + i;
-                    int targetCol = column + j;
-
-                    Cell mapCell = map.getCell(targetRow, targetCol);
-                    if (mapCell == null || mapCell.isOccupied()) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return true;
-    }
-
     public void startGame() {
-        Tetromino tetromino = getNextTetromino();
+        Tetromino tetromino = isDebugging ? getNextTetromino() : getRandomTetromino();
         Cell cell = getPlacementCell(tetromino);
 
-        if (!placeTetromino(tetromino, cell.getRow(), cell.getColumn())) {
-            gameLost();
+        if (isDebugging) {
+            if (!placeTetromino(tetromino, cell.getRow(), cell.getColumn())) {
+                gameLost();
+            } else {
+                drawScreen();
+            }
         } else {
-            drawScreen();
+            if (placeTetromino(tetromino, cell.getRow(), cell.getColumn())) {
+                Thread thread = new Thread(() -> {
+                    startTicking();
+                });
+                thread.setDaemon(true);
+                thread.start();
+
+                drawScreen();
+            }
         }
     }
 
-    public boolean resolveAction(TetrisAction action) {
+    protected void startTicking() {
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+
+            if (!resolveAction(TetrisAction.Tick)) {
+                TetrisGameManager.isGameRunning = false;
+                break;
+            };
+        }
+    }
+
+    public boolean resolveAction(TetrisAction action) { // only responsible function to process Tetris actions
         switch (action) {
             case Left -> left();
             case Right -> right();
@@ -151,7 +177,7 @@ public class TetrisGame {
                     Cell cell = map.getCell(row, column);
 
                     if (cell == null) {
-                        Tetromino newTetromino = getNextTetromino();
+                        Tetromino newTetromino = isDebugging ? getNextTetromino() : getRandomTetromino();
 
                         Cell placementCell = getPlacementCell(newTetromino);
 
@@ -160,7 +186,7 @@ public class TetrisGame {
 
                     if (cell.isOccupied()) {
                         if (!currentTetrominoOccupiedCells.contains(cell)) {
-                            Tetromino newTetromino = getNextTetromino();
+                            Tetromino newTetromino = isDebugging ? getNextTetromino() : getRandomTetromino();
 
                             Cell placementCell = getPlacementCell(newTetromino);
 
@@ -172,7 +198,6 @@ public class TetrisGame {
                 column++;
             }
         }
-
 
         return placeTetromino(currentTetromino, currentTetrominoStartRow - 1, currentTetrominoStartColumn);
     }

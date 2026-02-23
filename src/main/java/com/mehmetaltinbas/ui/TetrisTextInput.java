@@ -6,7 +6,7 @@ import com.mehmetaltinbas.models.TetrominoShape;
 import java.util.*;
 
 public class TetrisTextInput {
-    public static List<TetrisAction> parseActions(String actionsString) {
+    public static List<TetrisAction> parseDebugActions(String actionsString) {
         ArrayList<TetrisAction> actions = new ArrayList<>();
 
         for (String actionString : actionsString.split(" ")) {
@@ -21,7 +21,7 @@ public class TetrisTextInput {
         return actions;
     }
 
-    public static List<TetrominoShape> parseTetrominoes(String tetrominoesString) {
+    public static List<TetrominoShape> parseDebugTetrominoes(String tetrominoesString) {
         ArrayList<TetrominoShape> tetrominoes = new ArrayList<>();
 
         for (String tetrominoString : tetrominoesString.split(" ")) {

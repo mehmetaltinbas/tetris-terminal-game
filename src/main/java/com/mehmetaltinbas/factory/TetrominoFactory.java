@@ -7,11 +7,11 @@ import java.util.*;
 
 public class TetrominoFactory {
     private final HashMap<TetrominoShape, Tetromino> tetrominoesMap;
-    private final List<TetrominoShape> nextTetrominoes;
+    private final List<TetrominoShape> debugTetrominoes;
     private int currentTetrominoesIndex = -1;
 
-    public TetrominoFactory(List<TetrominoShape> nextTetrominoes) {
-        this.nextTetrominoes = nextTetrominoes;
+    public TetrominoFactory(List<TetrominoShape> debugTetrominoes) {
+        this.debugTetrominoes = debugTetrominoes;
         tetrominoesMap = createMap();
     }
 
@@ -61,6 +61,14 @@ public class TetrominoFactory {
     }
 
     public Tetromino getNext() {
-        return createTetromino(nextTetrominoes.get(++currentTetrominoesIndex));
+        return createTetromino(debugTetrominoes.get(++currentTetrominoesIndex));
+    }
+
+    public Tetromino getRandom() {
+        TetrominoShape[] shapes = tetrominoesMap.keySet().toArray(new TetrominoShape[0]);
+
+        int randomIndex = new Random().nextInt(shapes.length);
+
+        return createTetromino(shapes[randomIndex]);
     }
 }

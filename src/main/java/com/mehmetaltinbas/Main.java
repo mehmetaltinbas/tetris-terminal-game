@@ -6,28 +6,16 @@ import com.mehmetaltinbas.models.TetrisAction;
 import com.mehmetaltinbas.models.TetrominoShape;
 import com.mehmetaltinbas.ui.TetrisTextInput;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
     static void main() {
         try {
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+            String debugActions = "T T L T T T T T T T T O O O";
+            String debugPieces = "J Z";
 
-            // System.out.println("Enter Actions (e.g., T R L O):");
-            // List<TetrisAction> actions = TetrisTextInput.parseActions(bufferedReader.readLine());
-
-            // System.out.println("Enter Tetrominoes (e.g., I J L O):");
-            // List<Tetrominoes> nextTetrominoes = TetrisTextInput.parseTetrominoes(bufferedReader.readLine());
-
-            // for quick testing
-            // String actionsInput = "T T R T L T";
-            // String piecesInput = "I J O";
-            String actionsInput = "T T L T T T T T T T T O O O";
-            String piecesInput = "J Z";
-            List<TetrisAction> actions = TetrisTextInput.parseActions(actionsInput);
-            List<TetrominoShape> nextTetrominoes = TetrisTextInput.parseTetrominoes(piecesInput);
+            List<TetrisAction> actions = TetrisTextInput.parseDebugActions(debugActions);
+            List<TetrominoShape> nextTetrominoes = TetrisTextInput.parseDebugTetrominoes(debugPieces);
 
             TetrisGameManager manager = TetrisFactory.createTetrisGameManager(actions, nextTetrominoes);
 
