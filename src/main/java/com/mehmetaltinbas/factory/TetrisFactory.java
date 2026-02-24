@@ -11,14 +11,39 @@ import java.util.*;
 
 public class TetrisFactory {
     public static TetrisGameManager createTetrisGameManager(List<TetrisAction> debugActions, List<TetrominoShape> debugTetrominoes) {
+        System.out.println("Allowed keyboard actions:");
+        System.out.println("\t- move tetromino left: key 'q' or left arrow key");
+        System.out.println("\t- move tetromino right: key 'e' or right arrow key");
+        System.out.println("\t- rotate tetromino: key 'r'");
+        System.out.println("\t- quit the game: key 'esc'");
+        System.out.println();
+
+        Scanner scanner = new Scanner(System.in);
+
+        int width;
+        int height;
+
+        do {
+            System.out.print("Enter width (8-99): ");
+            width = scanner.nextInt();
+        } while (width < 8 || width > 99);
+
+        do {
+            System.out.print("Enter height (8-99): ");
+            height = scanner.nextInt();
+        } while (height < 8 || height > 99);
+
+
         TetrisGame.Builder tetrisGameBuilder = TetrisGame.Builder.newBuilder();
-        tetrisGameBuilder = tetrisGameBuilder.setMap(new TetrisMap(8, 8));
-        tetrisGameBuilder = tetrisGameBuilder.setUI(new TetrisTextUI());
-        tetrisGameBuilder = tetrisGameBuilder.setFactory(new TetrominoFactory(debugTetrominoes));
+        tetrisGameBuilder
+                .setMap(new TetrisMap(height, width))
+                .setUI(new TetrisTextUI())
+                .setFactory(new TetrominoFactory(debugTetrominoes));
 
         TetrisGameManager.Builder tetrisGameManagerBuilder = TetrisGameManager.Builder.newBuilder();
-        tetrisGameManagerBuilder = tetrisGameManagerBuilder.setGame(tetrisGameBuilder.build());
-        tetrisGameManagerBuilder = tetrisGameManagerBuilder.setDebugActionList(debugActions);
+        tetrisGameManagerBuilder
+                .setGame(tetrisGameBuilder.build())
+                .setDebugActionList(debugActions);
 
         return tetrisGameManagerBuilder.build();
     }
