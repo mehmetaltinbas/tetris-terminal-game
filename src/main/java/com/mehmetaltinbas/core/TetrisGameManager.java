@@ -16,7 +16,7 @@ public class TetrisGameManager {
 
     private TetrisGame game;
     private List<TetrisAction> debugActions;
-    private final ConcurrentLinkedQueue<TetrisAction> actionQueue = new ConcurrentLinkedQueue<>();
+    static final ConcurrentLinkedQueue<TetrisAction> actionQueue = new ConcurrentLinkedQueue<>();
 
     private TetrisGameManager() { }
 

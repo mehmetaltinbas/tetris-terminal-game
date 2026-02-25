@@ -24,12 +24,12 @@ public class TetrisFactory {
         int height;
 
         do {
-            System.out.print("Enter width (8-99): ");
+            System.out.print("Enter width of the map (8-99): ");
             width = scanner.nextInt();
         } while (width < 8 || width > 99);
 
         do {
-            System.out.print("Enter height (8-99): ");
+            System.out.print("Enter height of the map (8-99): ");
             height = scanner.nextInt();
         } while (height < 8 || height > 99);
 

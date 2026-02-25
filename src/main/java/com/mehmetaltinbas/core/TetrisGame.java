@@ -72,9 +72,9 @@ public class TetrisGame {
             }
         } else {
             if (placeTetromino(tetromino, cell.getRow(), cell.getColumn())) {
-                Thread thread = new Thread(this::startTicking);
-                thread.setDaemon(true);
-                thread.start();
+                Thread thickingThread = new Thread(this::startTicking);
+                thickingThread.setDaemon(true);
+                thickingThread.start();
 
                 drawScreen();
             }
@@ -89,10 +89,7 @@ public class TetrisGame {
                 throw new RuntimeException(e);
             }
 
-            if (!resolveAction(TetrisAction.Tick)) {
-                TetrisGameManager.isGameRunning = false;
-                break;
-            };
+            TetrisGameManager.actionQueue.add(TetrisAction.Tick);
         }
     }
 
