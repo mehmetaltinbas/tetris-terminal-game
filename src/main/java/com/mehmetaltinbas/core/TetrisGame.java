@@ -20,6 +20,7 @@ public class TetrisGame {
     protected int currentTetrominoStartColumn;
     protected Set<Cell> currentTetrominoOccupiedCells = new HashSet<>();
     protected int score = 0;
+    protected volatile int tickingIntervalMiliseconds = 1000;
 
     private TetrisGame() {
     }
@@ -36,7 +37,7 @@ public class TetrisGame {
             }
         }
 
-        ui.draw(map, score);
+        ui.draw(map, score, tickingIntervalMiliseconds);
     }
 
     private void gameLost() {
@@ -59,6 +60,16 @@ public class TetrisGame {
         int startCol = halfBoardWidth - halfTetrominoWidth;
 
         return map.getCell(startRow, startCol);
+    }
+
+    protected void increaseScore() {
+        score += 10;
+    }
+
+    protected void decreaseTickingInterval() {
+        if (tickingIntervalMiliseconds >= 200) {
+            tickingIntervalMiliseconds -= 50;
+        }
     }
 
     public void startGame() {
@@ -85,7 +96,7 @@ public class TetrisGame {
     protected void startTicking() {
         while (true) {
             try {
-                Thread.sleep(1000);
+                Thread.sleep(tickingIntervalMiliseconds);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -348,7 +359,9 @@ public class TetrisGame {
 
         for (int row : currentTetrominoOccupiedRows) {
             if (isRowComplete(row)) {
-                score += 10;
+                increaseScore();
+                decreaseTickingInterval();
+
                 completedRows.add(row);
                 unOccupyCompletedRow(row);
             }
