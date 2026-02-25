@@ -6,8 +6,8 @@ import com.mehmetaltinbas.models.TetrisAction;
 import com.mehmetaltinbas.models.Tetromino;
 import com.mehmetaltinbas.ui.TetrisUI;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.*;
 
 import static com.mehmetaltinbas.core.TetrisGameManager.isDebugging;
 
@@ -172,6 +172,8 @@ public class TetrisGame {
                     Cell cell = map.getCell(row, column);
 
                     if (cell == null) {
+                        checkRowCompletions();
+
                         Tetromino newTetromino = isDebugging ? getNextTetromino() : getRandomTetromino();
 
                         Cell placementCell = getPlacementCell(newTetromino);
@@ -180,7 +182,11 @@ public class TetrisGame {
                     }
 
                     if (cell.isOccupied()) {
-                        if (!currentTetrominoOccupiedCells.contains(cell)) {
+                        if (!currentTetrominoOccupiedCells.contains(cell)) { // current tetromino landed
+                            // check for if any row is complete
+                            checkRowCompletions();
+
+                            // spawning newTetromino
                             Tetromino newTetromino = isDebugging ? getNextTetromino() : getRandomTetromino();
 
                             Cell placementCell = getPlacementCell(newTetromino);
@@ -329,6 +335,61 @@ public class TetrisGame {
         if (isMoveableToLeft) {
             placeTetromino(currentTetromino, currentTetrominoStartRow, currentTetrominoStartColumn - 1);
         }
+    }
+
+    protected void checkRowCompletions() {
+        Set<Integer> currentTetrominoOccupiedRows = currentTetrominoOccupiedCells.stream()
+                .filter(Cell::isOccupied)
+                .map(Cell::getRow)
+                .collect(Collectors.toSet());
+
+        List<Integer> completedRows = new ArrayList<Integer>();
+
+        for (int row : currentTetrominoOccupiedRows) {
+            if (isRowComplete(row)) {
+                completedRows.add(row);
+                unOccupyCompletedRow(row);
+            }
+        }
+
+        Collections.sort(completedRows);
+
+        for (int i = 0; i < completedRows.size(); i++) {
+            int completedRow = completedRows.get(i);
+
+            completedRow -= i;
+
+            shiftRowsDownAboveCompletedRow(completedRow);
+        }
+    }
+
+    protected boolean isRowComplete(int row) {
+        boolean isComplete = true;
+
+        for (int i = 0; i < map.getWidth(); i ++) {
+            if (!map.getCell(row, i).isOccupied()) {
+                isComplete = false;
+                break;
+            }
+        }
+
+        return isComplete;
+    }
+
+    protected void unOccupyCompletedRow(int row) {
+        for (int i = 0; i < map.getWidth(); i ++) {
+            map.getCell(row, i).setOccupied(false);
+        }
+    }
+
+    protected void shiftRowsDownAboveCompletedRow(int row) {
+        for (int i = row + 1; i < map.getHeight(); i++) {
+            for (int j = 0; j < map.getWidth(); j ++) {
+                Cell aboveCell = map.getCell(i, j);
+                Cell belowCell = map.getCell(i - 1, j);
+                belowCell.setOccupied(aboveCell.isOccupied());
+            }
+        };
     }
 
     public static class Builder {

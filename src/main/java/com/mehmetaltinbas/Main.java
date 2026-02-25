@@ -11,8 +11,9 @@ import java.util.*;
 public class Main {
     static void main() {
         try {
-            String debugActions = "T T L T T T T T T T T O O O";
-            String debugPieces = "J Z";
+            //                    "T T T T T L L L , T T T T T , T T T T T, T T T T T";
+            String debugActions = "T T T T T L L L T  T T T T T T L  T T R T T T T T  T T R R R T T T T T T  T T";
+            String debugPieces = "O O O O Z T ";
 
             List<TetrisAction> actions = TetrisTextInput.parseDebugActions(debugActions);
             List<TetrominoShape> nextTetrominoes = TetrisTextInput.parseDebugTetrominoes(debugPieces);
